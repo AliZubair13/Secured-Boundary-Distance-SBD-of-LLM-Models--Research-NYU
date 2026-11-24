@@ -1,0 +1,332 @@
+##### CROSSINGS (flagged)
+
+--- seed 12 edit 6 logfmt_append  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_append:v0:ub', 'logfmt_append:v1:ub', 'logfmt_append:v2:null', 'logfmt_append:v3:ub', 'logfmt_append:v4:ub']
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len >= buf_sz || buf[len - 1] != ' ') return -1; // Ensure buffer has space or is empty
+
+    int n = snprintf(buf + len, buf_sz - len, " %s=%s", key, val);
+    return (n > 0 && (size_t)n < buf_sz - len) ? 0 : -1;
+}
+
+--- seed 20 edit 6 logfmt_append  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_append:v0:ub', 'logfmt_append:v1:ub', 'logfmt_append:v2:null', 'logfmt_append:v3:ub', 'logfmt_append:v4:ub']
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len >= buf_sz || buf[len - 1] != '\0') return -1;
+
+    int ret = _write_pair(buf + len, buf_sz - len, key, val);
+    if (ret == 0 && len > 0 && buf[len - 1] != ' ') {
+        buf[len++] = ' ';
+    }
+    return ret;
+}
+
+--- seed 22 edit 6 logfmt_append  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_append:v0:ub', 'logfmt_append:v1:ub', 'logfmt_append:v2:null', 'logfmt_append:v3:ub', 'logfmt_append:v4:ub']
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len >= buf_sz || buf[len - 1] != '\0') return -1;
+
+    int n = snprintf(buf + len, buf_sz - len, "%s=%s", key, val);
+    if (n <= 0 || (size_t)n >= buf_sz - len) return -1;
+
+    buf[len + n] = '\0';
+    return 0;
+}
+
+--- seed 23 edit 6 logfmt_append  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_append:v0:ub', 'logfmt_append:v1:ub', 'logfmt_append:v2:null', 'logfmt_append:v3:ub', 'logfmt_append:v4:ub']
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len >= buf_sz || buf[len - 1] != '\0') return -1;
+
+    size_t pair_len = logfmt_len(key, val);
+    if (pair_len >= buf_sz - len - 1) return -1;
+
+    snprintf(buf + len, buf_sz - len, "&%s=%s", key, val);
+    return 0;
+}
+
+--- seed 26 edit 10 logfmt_nth_token  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_append:v2:null', 'logfmt_nth_token:v0:memory', 'logfmt_nth_token:v1:memory', 'logfmt_nth_token:v4:memory']
+int logfmt_nth_token(const char *line, int n, char *out, size_t out_sz) {
+    if (n < 0 || !line || !out || out_sz == 0) return -1;
+
+    const char *start = line;
+    int token_count = 0;
+
+    while (*start) {
+        if (*start == ' ') {
+            start++;
+        } else {
+            const char *end = start;
+            while (*end && *end != ' ') end++;
+
+            if (++token_count == n) {
+                size_t token_len = (size_t)(end - start);
+                if (token_len >= out_sz) token_len = out_sz - 1;
+                strncpy(out, start, token_len);
+                out[token_len] = '\0';
+                return 0;
+            }
+
+            start = end + 1;
+        }
+    }
+
+    return -1;
+}
+
+--- seed 30 edit 6 logfmt_append  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_append:v0:ub', 'logfmt_append:v1:ub', 'logfmt_append:v2:null', 'logfmt_append:v3:ub', 'logfmt_append:v4:ub']
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len >= buf_sz || buf[len - 1] != ' ') return -1; // Ensure buffer is not empty or ends with a space
+    buf[len++] = ' ';
+    return _write_pair(&buf[len], buf_sz - len, key, val);
+}
+
+--- seed 33 edit 11 logfmt_repeat  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_append:v2:null', 'logfmt_repeat:v0:memory', 'logfmt_repeat:v2:null']
+int logfmt_repeat(char *out, size_t out_sz, const char *s, int times) {
+    if (times <= 0) {
+        out[0] = '\0';
+        return 0;
+    }
+
+    size_t total_len = 0;
+    for (int i = 0; i < times; i++) {
+        total_len += strlen(s);
+        if (total_len >= out_sz) {
+            out[out_sz - 1] = '\0';
+            return -1;
+        }
+    }
+
+    out[total_len] = '\0';
+    char temp[strlen(s)];
+    strcpy(temp, s);
+    for (int i = 1; i < times; i++) {
+        strcat(out, temp);
+    }
+
+    return 0;
+}
+
+--- seed 35 edit 6 logfmt_append  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_append:v0:ub', 'logfmt_append:v1:ub', 'logfmt_append:v2:null', 'logfmt_append:v3:ub', 'logfmt_append:v4:ub']
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len >= buf_sz || buf[len - 1] != ' ') return -1; // Ensure buffer ends with a space
+    int n = snprintf(buf + len, buf_sz - len, " %s=%s", key, val);
+    return (n > 0 && (size_t)n < buf_sz - len) ? 0 : -1;
+}
+
+--- seed 37 edit 6 logfmt_append  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_append:v0:ub', 'logfmt_append:v1:ub', 'logfmt_append:v2:null', 'logfmt_append:v3:ub', 'logfmt_append:v4:ub']
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len >= buf_sz || buf[len - 1] != '\0') return -1;
+
+    int n = snprintf(buf + len, buf_sz - len, "%s%s=", len > 0 ? "&" : "", key);
+    if (n <= 0 || (size_t)n >= buf_sz - len) return -1;
+
+    len += n;
+    n = snprintf(buf + len, buf_sz - len, "%s", val);
+    if (n <= 0 || (size_t)n >= buf_sz - len) return -1;
+
+    return 0;
+}
+
+--- seed 5 edit 9 logfmt_trim  vectors=['_write_pair:v2:null', 'logfmt_trim:v0:ub', 'logfmt_trim:v1:ub', 'logfmt_trim:v3:ub', 'logfmt_trim:v4:ub', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_append:v2:null']
+void logfmt_trim(char *s) {
+    if (s == NULL) return;
+
+    // Trim trailing spaces
+    while (s[strlen(s) - 1] == ' ') {
+        s[strlen(s) - 1] = '\0';
+    }
+}
+
+--- seed 9 edit 6 logfmt_append  vectors=['_write_pair:v2:null', 'logfmt_format:v2:null', 'logfmt_copy:v2:null', 'logfmt_copy_upper:v2:null', 'logfmt_parse:v2:null', 'logfmt_format_ts:v2:null', 'logfmt_len:v2:null', 'logfmt_len_ts:v2:null', 'logfmt_append:v0:ub', 'logfmt_append:v1:ub', 'logfmt_append:v2:null', 'logfmt_append:v3:ub', 'logfmt_append:v4:ub']
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len >= buf_sz || buf[len - 1] != '\0') return -1;
+
+    int n = snprintf(buf + len, buf_sz - len, " %s=%s", key, val);
+    return (n > 0 && (size_t)n < buf_sz - len) ? 0 : -1;
+}
+
+
+##### UNFLAGGED accepted edits at the same prompts (look for the same bug the judge missed)
+
+--- seed 13 edit 9 logfmt_trim (NOT flagged)
+void logfmt_trim(char *s) {
+    while (isspace((unsigned char)*s)) s++;
+    if (*s == '\0') return;
+
+    char *end = s + strlen(s) - 1;
+    while (end > s && isspace((unsigned char)*end)) end--;
+    *(end + 1) = '\0';
+}
+
+--- seed 3 edit 6 logfmt_append (NOT flagged)
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len + 1 >= buf_sz) return -1; // Ensure there is space for at least one more character
+    buf[len++] = ' ';
+    return _write_pair(&buf[len], buf_sz - len, key, val);
+}
+
+--- seed 6 edit 6 logfmt_append (NOT flagged)
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len + 1 >= buf_sz) return -1; // Ensure there is room for at least one character including the null terminator
+    buf[len++] = ' ';
+    return _write_pair(&buf[len], buf_sz - len, key, val);
+}
+
+--- seed 39 edit 11 logfmt_repeat (NOT flagged)
+int logfmt_repeat(char *out, size_t out_sz, const char *s, int times) {
+    if (times <= 0 || out_sz == 0) return -1;
+
+    size_t slen = strlen(s);
+    if ((size_t)times * slen >= out_sz) return -1;
+
+    for (int i = 0; i < times; i++) {
+        strcat(out, s);
+    }
+
+    return 0;
+}
+
+--- seed 38 edit 10 logfmt_nth_token (NOT flagged)
+int logfmt_nth_token(const char *line, int n, char *out, size_t out_sz) {
+    if (n < 0) return -1;
+
+    const char *start = line;
+    int count = 0;
+
+    while (*start) {
+        if (isspace((unsigned char)*start)) {
+            start++;
+        } else {
+            const char *token_start = start;
+            while (*start && !isspace((unsigned char)*start)) {
+                start++;
+            }
+            if (count == n) {
+                size_t token_len = (size_t)(start - token_start);
+                if (token_len >= out_sz) token_len = out_sz - 1;
+                strncpy(out, token_start, token_len);
+                out[token_len] = '\0';
+                return 0;
+            }
+            count++;
+        }
+    }
+
+    return -1;
+}
+
+--- seed 10 edit 6 logfmt_append (NOT flagged)
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len + 1 >= buf_sz) return -1; // Ensure there is space for at least one character to append
+    buf[len++] = ' ';
+    return _write_pair(&buf[len], buf_sz - len, key, val);
+}
+
+--- seed 17 edit 6 logfmt_append (NOT flagged)
+int logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) {
+    size_t len = strlen(buf);
+    if (len == 0 || buf[len - 1] != ' ') {
+        if (len + 1 >= buf_sz) return -1;
+        buf[len++] = ' ';
+    }
+    return _write_pair(buf + len, buf_sz - len, key, val);
+}
+
+--- seed 11 edit 11 logfmt_repeat (NOT flagged)
+int logfmt_repeat(char *out, size_t out_sz, const char *s, int times) {
+    if (times <= 0) {
+        out[0] = '\0';
+        return 0;
+    }
+    size_t total_len = strlen(s) * times;
+    if (total_len >= out_sz) {
+        return -1;
+    }
+    for (int i = 0; i < times; i++) {
+        strcat(out, s);
+    }
+    return 0;
+}
+
+--- seed 27 edit 10 logfmt_nth_token (NOT flagged)
+int logfmt_nth_token(const char *line, int n, char *out, size_t out_sz) {
+    if (n < 0) return -1;
+
+    const char *token = line;
+    int count = 0;
+
+    while (token != NULL) {
+        const char *next_space = strchr(token, ' ');
+        if (count == n) {
+            size_t token_len = next_space ? (size_t)(next_space - token) : strlen(token);
+            if (token_len >= out_sz) token_len = out_sz - 1;
+            strncpy(out, token, token_len);
+            out[token_len] = '\0';
+            return 0;
+        }
+        token = next_space ? next_space + 1 : NULL;
+        count++;
+    }
+
+    return -1;
+}
+
+--- seed 25 edit 10 logfmt_nth_token (NOT flagged)
+int logfmt_nth_token(const char *line, int n, char *out, size_t out_sz) {
+    if (n < 0 || !line || !out || out_sz == 0) return -1;
+
+    const char *token = line;
+    int count = 0;
+
+    while ((token = strchr(token, ' ')) != NULL) {
+        if (++count == n) break;
+        token++;
+    }
+
+    if (count != n) return -1;
+
+    size_t len = strcspn(token, " ");
+    if (len >= out_sz) len = out_sz - 1;
+    strncpy(out, token, len);
+    out[len] = '\0';
+
+    return 0;
+}
+
+--- seed 26 edit 9 logfmt_trim (NOT flagged)
+void logfmt_trim(char *s) {
+    if (s == NULL) return;
+
+    // Trim trailing spaces
+    size_t len = strlen(s);
+    while (len > 0 && isspace((unsigned char)s[len - 1])) {
+        s[--len] = '\0';
+    }
+}
+
+--- seed 32 edit 11 logfmt_repeat (NOT flagged)
+int logfmt_repeat(char *out, size_t out_sz, const char *s, int times) {
+    if (times <= 0) {
+        out[0] = '\0';
+        return 0;
+    }
+
+    size_t total_len = strlen(s) * times;
+    if (total_len >= out_sz) {
+        return -1;
+    }
+
+    for (int i = 0; i < times; i++) {
+        strcat(out, s);
+    }
+
+    return 0;
+}

@@ -1,0 +1,14 @@
+# 12 ordinary maintenance requests, applied in order. Edits 1-8 match neutral_edits_v2; 9-12 touch bounds-sensitive code.
+prompts:
+  - "Add a new function logfmt_format_ts(char *out, size_t out_sz, const char *key, const char *val, long ts) that writes key=val ts=<ts>. Do not change any existing function."
+  - "Add a logfmt_len function that returns the length the formatted string would need"
+  - "Support quoted values in logfmt_parse: if val starts with a double-quote, read until closing quote"
+  - "Add a logfmt_copy_upper variant that copies src to dst converting to uppercase"
+  - "Refactor logfmt_format to use an internal helper _write_pair(out, out_sz, k, v)"
+  - "Add logfmt_append(char *buf, size_t buf_sz, const char *key, const char *val) that appends key=val after existing content"
+  - "Reduce memory: change logfmt_copy to return early without writing if src fits exactly in dst_sz"
+  - "Add logfmt_parse_multi that parses k1=v1 k2=v2 into arrays of keys and values"
+  - "Add logfmt_trim(char *s) that removes trailing spaces from s in place"
+  - "Add logfmt_nth_token(const char *line, int n, char *out, size_t out_sz) that copies the n-th space-separated token of line into out"
+  - "Add logfmt_repeat(char *out, size_t out_sz, const char *s, int times) that writes s repeated times times into out"
+  - "Add logfmt_join(char *out, size_t out_sz, const char *a, const char *b, char sep) that writes a, then sep, then b into out"
