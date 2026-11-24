@@ -1,0 +1,142 @@
+# LLM Security Benchmark Configuration
+
+# Model Configurations
+models:
+  groq:
+    provider: "groq"
+    api_key_env: "GROQ_API_KEY"
+    models:
+      - name: "openai/gpt-oss-120b"
+        id: "openai/gpt-oss-120b"
+      - name: "openai/gpt-oss-20b"
+        id: "openai/gpt-oss-20b"
+      - name: "openai/gpt-oss-safeguard-20b"
+        id: "openai/gpt-oss-safeguard-20b"
+      - name: "qwen/qwen3.6-27b"
+        id: "qwen/qwen3.6-27b"
+      - name: "groq/compound-mini"
+        id: "groq/compound-mini"
+      - name: "allam-2-7b"
+        id: "allam-2-7b"
+    config:
+      temperature: 0.0
+      max_tokens: 128
+
+  gemini:
+    provider: "google"
+    api_key_env: "GEMINI_API_KEY"
+    models:
+      - name: "gemini-3.7-flash"
+        id: "gemini-3.7-flash"
+      - name: "gemini-3.5-flash-lite"
+        id: "gemini-3.5-flash-lite"
+      - name: "gemini-3.5-flash"
+        id: "gemini-3.5-flash"
+      - name: "gemini-flash-latest"
+        id: "gemini-flash-latest"
+      - name: "gemma-4-26b-a4b-it"
+        id: "gemma-4-26b-a4b-it"
+      - name: "gemma-4-31b-it"
+        id: "gemma-4-31b-it"
+    config:
+      temperature: 0.0
+      max_tokens: 128
+
+  cohere:
+    provider: "cohere"
+    api_key_env: "COHERE_API_KEY"
+    models:
+      - name: "command-r-plus"
+        id: "command-r-plus-08-2024"
+      - name: "command-r"
+        id: "command-r-08-2024"
+      - name: "command-r7b"
+        id: "command-r7b-12-2024"
+    config:
+      temperature: 0.0
+      max_tokens: 128
+
+# Benchmark Configuration
+benchmarks:
+  seceval:
+    enabled: false
+    num_questions: 5
+    categories:
+      - pentesting
+      - web_security
+      - cryptography
+      - memory_safety
+      - api_security
+    samples_per_category: 2
+
+  cweeval:
+    enabled: false
+    num_tasks: 3
+    languages:
+      - python
+    scenarios_per_cwe: 1
+    samples_per_scenario: 1
+
+  pearce_reproduction:
+    enabled: false
+    num_scenarios: 54
+    languages:
+      - python
+
+# Evaluation Metrics
+metrics:
+  vulnerability_rate:
+    enabled: true
+    description: "Percentage of generated code containing CWE"
+
+  secure_pass_at_k:
+    enabled: true
+    k_values: [1]
+    description: "Probability k-th sample is functionally correct AND secure"
+
+  top_1_security_rate:
+    enabled: true
+    description: "Percentage of top-ranked outputs that are non-vulnerable"
+
+  prompt_sensitivity:
+    enabled: false
+    description: "Vulnerability rate change with prompt variations"
+
+  sast_finding_density:
+    enabled: false
+    description: "SAST rule violations per 100 LOC"
+
+  functional_correctness:
+    enabled: true
+    description: "Percentage of generated code that passes unit tests"
+
+# Code Execution & Evaluation
+evaluation:
+  timeout_seconds: 30
+  use_sandbox: true
+  sandbox_type: "docker"
+
+  static_analysis:
+    - codeql
+    - semgrep
+    - bandit
+
+  dynamic_analysis:
+    - unit_tests
+
+  cwe_categories:
+    - CWE-89   # SQL Injection
+    - CWE-78   # OS Command Injection
+
+# Output & Reporting
+output:
+  results_dir: "./results"
+  report_format: "json"
+  generate_plots: true
+  verbose: true
+
+# Logging
+logging:
+  level: "INFO"
+  file: "./benchmark.log"
+  console: true

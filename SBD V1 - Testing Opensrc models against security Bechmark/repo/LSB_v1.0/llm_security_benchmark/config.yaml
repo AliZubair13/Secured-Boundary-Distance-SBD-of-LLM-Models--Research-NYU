@@ -1,0 +1,191 @@
+# LLM Security Benchmark Configuration
+
+# Model Configurations
+models:
+  openai:
+    provider: "openai"
+    api_key_env: "OPENAI_API_KEY"
+    models:
+      - name: "gpt-4"
+        id: "gpt-4"
+      - name: "gpt-3.5-turbo"
+        id: "gpt-3.5-turbo"
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+      top_p: 0.95
+
+  gemini:
+    provider: "google"
+    api_key_env: "GOOGLE_API_KEY"
+    models:
+      - name: "gemini-2.0-flash"
+        id: "gemini-2.0-flash"
+      - name: "gemini-1.5-pro"
+        id: "gemini-1.5-pro"
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+  mistral:
+    provider: "mistral"
+    api_key_env: "MISTRAL_API_KEY"
+    models:
+      - name: "mistral-large"
+        id: "mistral-large-latest"
+      - name: "codestral"
+        id: "codestral-latest"
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+  anthropic:
+    provider: "anthropic"
+    api_key_env: "ANTHROPIC_API_KEY"
+    models:
+      - name: "claude-3-opus"
+        id: "claude-3-opus-20240229"
+      - name: "claude-3-sonnet"
+        id: "claude-3-sonnet-20240229"
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+  groq:
+    provider: "groq"
+    api_key_env: "GROQ_API_KEY"
+    models:
+      - name: "llama-3.1-8b"
+        id: "llama-3.1-8b-instant"
+      - name: "llama-3.3-70b"
+        id: "llama-3.3-70b-versatile"
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+  xai:
+    provider: "xai"
+    api_key_env: "XAI_API_KEY"
+    models:
+      - name: "grok-2"
+        id: "grok-2"
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+# Benchmark Configuration
+benchmarks:
+  seceval:
+    enabled: true
+    num_questions: 2189
+    categories:
+      - pentesting
+      - web_security
+      - cryptography
+      - memory_safety
+      - api_security
+    samples_per_category: 400
+    
+  cweeval:
+    enabled: true
+    num_tasks: 119
+    languages:
+      - python
+      - c
+      - java
+      - javascript
+      - go
+    scenarios_per_cwe: 3
+    samples_per_scenario: 5
+    
+  pearce_reproduction:
+    enabled: true
+    num_scenarios: 54
+    languages:
+      - python
+      - c
+      - verilog
+
+# Evaluation Metrics
+metrics:
+  vulnerability_rate:
+    enabled: true
+    description: "Percentage of generated code containing CWE"
+    
+  secure_pass_at_k:
+    enabled: true
+    k_values: [1, 3, 5, 10]
+    description: "Probability k-th sample is functionally correct AND secure"
+    
+  top_1_security_rate:
+    enabled: true
+    description: "Percentage of top-ranked outputs that are non-vulnerable"
+    
+  prompt_sensitivity:
+    enabled: true
+    description: "Vulnerability rate change with prompt variations"
+    
+  sast_finding_density:
+    enabled: true
+    description: "SAST rule violations per 100 LOC"
+    
+  functional_correctness:
+    enabled: true
+    description: "Percentage of generated code that passes unit tests"
+
+# Code Execution & Evaluation
+evaluation:
+  timeout_seconds: 30
+  use_sandbox: true
+  sandbox_type: "docker"
+  
+  cohere:
+    provider: "cohere"
+    api_key_env: "COHERE_API_KEY"
+    models:
+      - name: "cohere-command"
+        id: "command-xlarge-nightly"
+    config:
+      temperature: 0.7
+      max_tokens: 2048
+
+  # Static analysis
+  static_analysis:
+    - codeql
+    - semgrep
+    - bandit
+    
+  # Dynamic analysis
+  dynamic_analysis:
+    - unit_tests
+    - property_based_tests
+    
+  cwe_categories:
+    - CWE-79   # XSS
+    - CWE-89   # SQL Injection
+    - CWE-20   # Improper Input Validation
+    - CWE-22   # Path Traversal
+    - CWE-78   # OS Command Injection
+    - CWE-787  # Buffer Overflow
+    - CWE-125  # Buffer Read Overflow
+    - CWE-416  # Use After Free
+    - CWE-476  # NULL Pointer Dereference
+    - CWE-190  # Integer Overflow
+    - CWE-798  # Hardcoded Credentials
+    - CWE-306  # Missing Authentication
+    - CWE-502  # Deserialization
+    - CWE-434  # Unrestricted Upload
+    - CWE-732  # Incorrect Permissions
+
+# Output & Reporting
+output:
+  results_dir: "./results"
+  report_format: "json"
+  generate_plots: true
+  verbose: true
+  
+# Logging
+logging:
+  level: "INFO"
+  file: "./benchmark.log"
+  console: true

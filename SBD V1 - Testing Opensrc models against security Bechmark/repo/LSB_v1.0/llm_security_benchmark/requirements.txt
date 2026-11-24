@@ -1,0 +1,22 @@
+# LLM Security Benchmark Requirements
+
+# Core dependencies
+python-dotenv>=1.0.0
+pyyaml>=6.0
+
+# Model API clients
+openai>=1.0.0
+google-generativeai>=0.3.0
+mistralai>=0.0.7
+anthropic>=0.7.0
+groq>=0.4.0
+
+# Code analysis tools
+bandit>=1.7.5
+semgrep>=1.45.0
+
+# Utilities
+requests>=2.31.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0

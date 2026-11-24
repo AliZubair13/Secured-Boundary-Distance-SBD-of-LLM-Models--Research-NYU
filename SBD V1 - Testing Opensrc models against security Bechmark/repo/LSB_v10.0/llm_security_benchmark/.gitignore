@@ -1,0 +1,16 @@
+.env
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+# Local venv (do not publish)
+venv/
+# Results and logs
+results/
+logs/
+benchmark.log
+*.log
+# Large local clones (canonical copies live under datasets/)
+.datasets_cache/
+results/*
+!results/metrics_table.md
+!results/verification_report.md

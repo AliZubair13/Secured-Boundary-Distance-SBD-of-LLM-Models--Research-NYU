@@ -1,0 +1,4 @@
+FROM python:3.11-slim
+RUN pip install --no-cache-dir bandit pytest
+WORKDIR /work
+# Optional: run with --runtime=runsc when gVisor is installed on the host.

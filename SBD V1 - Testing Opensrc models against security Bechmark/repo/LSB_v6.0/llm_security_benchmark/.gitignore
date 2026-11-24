@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.py[cod]
+results/*
+!results/metrics_table.md
+!results/verification_report.md
+benchmark.log
+.datasets_cache/
